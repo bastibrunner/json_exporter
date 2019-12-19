@@ -224,10 +224,11 @@ class Rule(object):
 
 class Target(object):
     'Represent a single target HTTP(S) endpoint to scrape JSON from.'
-    def __init__(self, name, method, url, params, headers, body, timeout, ca_bundle, strftime, strftime_utc):
+    def __init__(self, name, method, url, params, headers, body, timeout, ca_bundle, user ,password, strftime, strftime_utc):
         self.name = name
         self.method = method
         self.url = url
+        self.auth = requests.auth.HTTPBasicAuth(user,password)
         self.params = str_params(params)
         self.headers = headers
         self.body = body
@@ -246,7 +247,9 @@ class Target(object):
                                                                    self.url,
                                                                    self.params,
                                                                    self.headers,
-                                                                   self.timeout)
+                                                                   self.timeout,
+                                                                   self.auth
+                                                                   )
 
     def add_rule(self, rule):
         'Add a Rule object.'
@@ -286,7 +289,7 @@ class Target(object):
             debug('scrape method=%s, url=%s, params=%r, headers=%r, data=%r', self.method, url, params, self.headers, data)
             response = self.session.request(self.method, url, params=params,
                                             headers=self.headers, data=data,
-                                            timeout=self.timeout)
+                                            timeout=self.timeout, auth=self.auth)
             response.raise_for_status()
 
             try:
@@ -341,6 +344,9 @@ class JSONCollector(object):
         headers = read_from(target, 'headers', {})
         body = read_from(target, 'body', None)
         timeout = read_from(target, 'timeout', glb_timeout)
+        user = read_from(target, 'user', "")
+        password = read_from(target, 'password', "")
+
         ca_bundle = read_from(target, 'ca_bundle', glb_ca_bundle)
         strftime = read_from(target, 'strftime', '')
         strftime_utc = bool(read_from(target, 'strftime_utc', True))
@@ -350,7 +356,7 @@ class JSONCollector(object):
         if not url:
             warn('skipping target %s without a url', target_name)
             return None
-        return Target(target_name, method, url, params, headers, body, timeout, ca_bundle, strftime, strftime_utc)
+        return Target(target_name, method, url, params, headers, body, timeout, ca_bundle, user, password, strftime, strftime_utc)
 
     def read_rule_config(self, rule, target_name, rule_idx):
         'Read configuration items from rule config.'

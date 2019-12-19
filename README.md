@@ -96,6 +96,8 @@ targets:
 | `timeout` | the timeout to use, defaults to 5 seconds, optional |
 | `params` | a mapping with query parameters to add to the url, optional |
 | `headers` | a mapping with HTTP headers to use when scraping target, optional |
+| `user` | a username to authenticate with basic auth, optional |
+| `password` | a username to authenticate with basic auth, optional |
 | `body` | data to use in message body when scraping target, optional |
 | `strftime` | time format string https://docs.python.org/2/library/time.html#time.strftime, can be used as template variable in `url`, `params` and `body`, optional |
 | `strtime_utc` | boolean to indicate if the time used in variable must be in UTC, defaults to `yes`, optional |
