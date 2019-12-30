@@ -248,7 +248,6 @@ class Target(object):
                                                                    self.params,
                                                                    self.headers,
                                                                    self.timeout,
-                                                                   self.auth
                                                                    )
 
     def add_rule(self, rule):
